@@ -1,0 +1,5 @@
+dankmemer.py>=0.1.0a2
+sphinx>=4.0
+sphinx-autodoc-typehints>=1.12
+sphinx-rtd-theme>=1.0
+readthedocs-sphinx-search>=0.6.0
