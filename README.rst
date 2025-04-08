@@ -6,7 +6,7 @@ dankmemer.py
 
 **dankmemer.py** is currently in alpha. At this stage, only the items route is implemented. Future releases will include additional routes and enhanced features.
 
-**dankmemer.py** is a simple and powerful asynchronous Python wrapper for the `DankAlert API <https://api.dankalert.xyz>`_ — giving you easy access to Dank Memer-related data like items, NPCs, skills, tools, and more.
+**dankmemer.py** is a simple and powerful asynchronous Python wrapper for the `DankAlert API <https://api.dankalert.xyz/dank>`_ — giving you easy access to Dank Memer-related data like items, NPCs, skills, tools, and more.
 
 🚀 Features
 -----------
