@@ -1,4 +1,4 @@
-__version__ = "0.1.0a2"
+__version__ = "0.1.0a3"
 
 from .client import DankMemerClient
 from .routes.items import Item, ItemsFilter

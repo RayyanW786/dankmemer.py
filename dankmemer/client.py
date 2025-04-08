@@ -5,7 +5,7 @@ from typing import Optional
 
 import aiohttp
 
-from .routes import items
+from dankmemer.routes import items
 
 
 class DankMemerClient:
