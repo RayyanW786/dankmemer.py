@@ -68,7 +68,7 @@ Documentation
 
 Full documentation for dankmemer.py can be found at:
 
-   https://dankmemer-py.readthedocs.io
+   https://dankmemerpy.readthedocs.io
 
 Feel free to test, report issues, and contribute to this alpha release!
 
