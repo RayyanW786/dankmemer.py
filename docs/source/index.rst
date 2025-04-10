@@ -3,18 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to dankmemer.py's Documentation!
-==========================================
+dankmemer.py Documentation
+==========================
 
-This is the official documentation for dankmemer.py, an asynchronous Python wrapper for the DankAlert API.
-
-Contents
---------
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   api
+Welcome to the documentation for dankmemer.py, a lightweight asynchronous Python wrapper for the DankAlert API.
+This alpha release currently supports the Items and NPC routes. Future releases will expand the API coverage.
 
 Installation
 ------------
@@ -22,39 +15,30 @@ You can install dankmemer.py via pip:
 
 .. code-block:: bash
 
+   pip install dankmemer
    pip install dankmemer.py
 
-Quick Example
--------------
-Below is a basic usage example that demonstrates how to query the `/items` endpoint, apply filtering with the `ItemsFilter` class, and perform fuzzy matching using the `Fuzzy` helper.
+Features
+--------
+- Built-in caching with configurable TTL
+- Powerful filtering (exact, fuzzy, membership [IN], numeric range, Above/Below/Range)
+- Anti-rate-limit protection
 
-.. code-block:: python
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting Started
 
-   import asyncio
-   from dankmemer import DankMemerClient, ItemsFilter, Fuzzy
+   quickstart
+   examples
 
-   async def main():
-       async with DankMemerClient() as client:
-           # Retrieve all items without filtering.
-           all_items = await client.items.query()
-           print("All items:", all_items)
 
-           # Example: Filter items with:
-           # - Fuzzy matching on the 'name' field.
-           # - Boolean filtering on 'hasUse'.
-           # - Numeric range filtering on 'marketValue'.
-           filter_obj = ItemsFilter(
-               name=Fuzzy("trash", cutoff=80),  # fuzzy match on name with 80% cutoff
-               hasUse=False,                   # only items that are not usable
-               marketValue=(5000, 10000000)      # marketValue between 5,000 and 10,000,000
-           )
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
 
-           filtered_items = await client.items.query(filter_obj)
-           print("Filtered items:", filtered_items)
+   dankmemerclient
+   routes
+   objects
+   exceptions
 
-   asyncio.run(main())
-
-Additional Information
-----------------------
-For a detailed description of each module and class, please refer to the API Reference above.
 

@@ -1,7 +1,19 @@
-__version__ = "0.1.0a3"
+__version__ = "0.2.0a1"
 
 from .client import DankMemerClient
-from .routes.items import Item, ItemsFilter
-from .utils import Fuzzy
+from .routes import NPC, Item, ItemsFilter, NPCsFilter
+from .utils import IN, Above, Below, DotDict, Fuzzy, Range
 
-__all__ = ["DankMemerClient", "Fuzzy", "ItemsFilter", "Item"]
+__all__ = [
+    "DankMemerClient",
+    "Fuzzy",
+    "IN",
+    "Above",
+    "Below",
+    "Range",
+    "DotDict",
+    "ItemsFilter",
+    "Item",
+    "NPC",
+    "NPCsFilter",
+]

@@ -1,3 +1,5 @@
 recursive-include dankmemer *.py 
 include README.rst
 include LICENSE
+exclude tests/*
+recursive-exclude tests *

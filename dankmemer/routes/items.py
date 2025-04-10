@@ -1,11 +1,18 @@
 import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from rapidfuzz import fuzz
 
-from dankmemer.utils import Fuzzy
+from dankmemer.types import (
+    BooleanType,
+    DictType,
+    IntegerType,
+    NumericFilterType,
+    StringFilterType,
+)
+from dankmemer.utils import IN, Above, Below, Fuzzy, Range
 
 if TYPE_CHECKING:
     from dankmemer.client import DankMemerClient
@@ -100,63 +107,77 @@ class ItemsFilter:
       - value: Filter by value.
       - limit: Maximum number of results returned.
 
+
     Examples:
         .. code-block:: python
 
             from dankmemer import Fuzzy, ItemsFilter
+            from dankmemer.types import IN, Above, Below, Range
 
-            # Fuzzy matching example for the 'name' field: match items with a name similar
-            # to "trash" with a cutoff of 80.
-            filter_fuzzy = ItemsFilter(name=Fuzzy("trash", cutoff=80))
 
             # Exact string matching for the 'name' field.
             filter_exact = ItemsFilter(name="Trash")
 
-            # Numeric filtering: filtering 'marketValue' to be within a range.
-            filter_range = ItemsFilter(marketValue=(5000, 10000000))
+            # Fuzzy matching example for the 'name' field:
+            filter_fuzzy = ItemsFilter(name=Fuzzy("trash", cutoff=80))
+
+            # Using IN for membership matching.
+            filter_in = ItemsFilter(name=IN("melmsie"))
+
 
             # Numeric filtering: filtering 'netValue' for an exact match.
             filter_numeric = ItemsFilter(netValue=100)
 
-            # Boolean filtering: filtering by the 'hasUse' flag.
+            # Numeric filtering with a tuple.
+            filter_range = ItemsFilter(marketValue=(5000, 10000000))
+
+            # Numeric filtering with interfaces.
+            filter_numeric = ItemsFilter(netValue=Above(10000))
+            filter_numeric2 = ItemsFilter(netValue=Below(100000))
+            filter_numeric3 = ItemsFilter(netValue=Range(100, 100000))
+
+
+            # Boolean filtering.
             filter_bool = ItemsFilter(hasUse=True)
+
+
     """
 
     def __init__(
         self,
-        id: Optional[int] = None,
-        name: Optional[Union[str, Fuzzy]] = None,
-        details: Optional[Union[str, Fuzzy]] = None,
-        emoji: Optional[Union[str, Fuzzy]] = None,
-        flavor: Optional[Union[str, Fuzzy]] = None,
-        hasUse: Optional[bool] = None,
-        imageURL: Optional[Union[str, Fuzzy]] = None,
-        itemKey: Optional[Union[str, Fuzzy]] = None,
-        marketValue: Optional[Union[int, Tuple[int, int]]] = None,
-        netValue: Optional[Union[int, Tuple[int, int]]] = None,
-        rarity: Optional[Union[str, Fuzzy]] = None,
-        skins: Optional[Dict[str, Any]] = None,
-        tags: Optional[Dict[str, Any]] = None,
-        type: Optional[Union[str, Fuzzy]] = None,
-        value: Optional[Union[int, Tuple[int, int]]] = None,
-        limit: Optional[int] = None,
+        id: IntegerType = None,
+        name: StringFilterType = None,
+        details: StringFilterType = None,
+        emoji: StringFilterType = None,
+        flavor: StringFilterType = None,
+        hasUse: BooleanType = None,
+        imageURL: StringFilterType = None,
+        itemKey: StringFilterType = None,
+        marketValue: NumericFilterType = None,
+        netValue: NumericFilterType = None,
+        rarity: StringFilterType = None,
+        skins: DictType = None,
+        tags: DictType = None,
+        type: StringFilterType = None,
+        value: NumericFilterType = None,
+        limit: IntegerType = None,
     ) -> None:
-        self.id: Optional[int] = id
-        self.name: Optional[Union[str, Fuzzy]] = name
-        self.details: Optional[Union[str, Fuzzy]] = details
-        self.emoji: Optional[Union[str, Fuzzy]] = emoji
-        self.flavor: Optional[Union[str, Fuzzy]] = flavor
-        self.hasUse: Optional[bool] = hasUse
-        self.imageURL: Optional[Union[str, Fuzzy]] = imageURL
-        self.itemKey: Optional[Union[str, Fuzzy]] = itemKey
-        self.marketValue: Optional[Union[int, Tuple[int, int]]] = marketValue
-        self.netValue: Optional[Union[int, Tuple[int, int]]] = netValue
-        self.rarity: Optional[Union[str, Fuzzy]] = rarity
-        self.skins: Optional[Dict[str, Any]] = skins
-        self.tags: Optional[Dict[str, Any]] = tags
-        self.type: Optional[Union[str, Fuzzy]] = type
-        self.value: Optional[Union[int, Tuple[int, int]]] = value
-        self.limit: Optional[int] = limit
+        self.id: IntegerType = id
+        self.name: StringFilterType = name
+        self.details: StringFilterType = details
+        self.emoji: StringFilterType = emoji
+        self.flavor: StringFilterType = flavor
+        self.hasUse: BooleanType = hasUse
+        self.imageURL: StringFilterType = imageURL
+        self.itemKey: StringFilterType = itemKey
+        self.marketValue: NumericFilterType = marketValue
+        self.netValue: NumericFilterType = netValue
+        self.rarity: StringFilterType = rarity
+        self.skins: DictType = skins
+        self.tags: DictType = tags
+        self.type: StringFilterType = type
+        self.value: NumericFilterType = value
+        self.limit: IntegerType = limit
 
     def apply(self, data: List[Item]) -> List[Item]:
         results: List[Item] = []
@@ -214,20 +235,28 @@ class ItemsFilter:
             results = results[: self.limit]
         return results
 
-    def _matches_field(self, field_value: str, filter_val: Union[str, Fuzzy]) -> bool:
+    def _matches_field(self, field_value: str, filter_val: StringFilterType) -> bool:
         if not field_value:
             return False
         if isinstance(filter_val, Fuzzy):
             score: float = fuzz.ratio(field_value.lower(), filter_val.value.lower())
             return score >= filter_val.cutoff
+        elif isinstance(filter_val, IN):
+            return any(v.lower() in field_value.lower() for v in filter_val.patterns)
         return field_value.lower() == filter_val.lower()  # type: ignore
 
     def _matches_numeric(
-        self, field_value: Union[int, float], filter_val: Union[int, Tuple[int, int]]
+        self, field_value: Union[int, float], filter_val: NumericFilterType
     ) -> bool:
         if isinstance(filter_val, tuple):
             low, high = filter_val
             return low <= field_value <= high
+        elif isinstance(filter_val, Above):
+            return field_value > filter_val.threshold
+        elif isinstance(filter_val, Below):
+            return field_value < filter_val.threshold
+        elif isinstance(filter_val, Range):
+            return filter_val.low <= field_value <= filter_val.high
         return field_value == filter_val
 
 
