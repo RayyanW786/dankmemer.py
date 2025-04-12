@@ -1,14 +1,13 @@
 dankmemer.py
 ============
 
-**Alpha Release Notice:**
--------------------------
+**Release candidate Notice:**
+-----------------------------
 
-**dankmemer.py** is currently in alpha. At this stage, only the items and NPC routes are implemented.
-Future releases will include additional routes and enhanced features.
+**dankmemer.py** is currently in its release candidate stage. At this stage, all routes are implemented however they may be a few bugs present.
 
 **dankmemer.py** is a lightweight asynchronous Python wrapper for the
-`DankAlert API <https://api.dankalert.xyz>`_ — it allows you to easily access Dank Memer-related data (such as items and NPCs) using powerful filtering and built-in caching.
+`DankAlert API <https://api.dankalert.xyz/dank>`_ — it allows you to easily access Dank Memer-related data (such as items and NPCs) using powerful filtering and built-in caching.
 
 🚀 Features
 -----------

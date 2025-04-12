@@ -1,4 +1,4 @@
-__version__ = "0.2.0a1"
+__version__ = "1.0.0rc1"
 
 from .client import DankMemerClient
 from .routes import (
