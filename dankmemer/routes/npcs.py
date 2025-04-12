@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
 from rapidfuzz import fuzz
 
@@ -77,8 +77,7 @@ class NPCsFilter:
     Examples:
         .. code-block:: python
 
-            from dankmemer import NPCsFilter, Fuzzy
-            from dankmemer.types import IN, Above, Below, Range
+            from dankmemer import NPCsFilter, Fuzzy, IN, Above, Below, Range
 
             # Exact string matching for the 'name' field.
             filter_exact = NPCsFilter(name="Chad")
@@ -168,7 +167,7 @@ class NPCsFilter:
             return score >= filter_val.cutoff
         elif isinstance(filter_val, IN):
             return any(v.lower() in field_value.lower() for v in filter_val.patterns)
-        return field_value.lower() == filter_val.lower()  # type: ignore
+        return field_value.lower() == filter_val.lower()
 
     def _matches_numeric(self, field_value: Any, filter_val: NumericFilterType) -> bool:
         if field_value is None:
@@ -258,3 +257,21 @@ class NPCsRoute:
         if npc_filter is None:
             return npc_list
         return npc_filter.apply(npc_list)
+
+    async def iter_query(
+        self, npc_filter: Optional[NPCsFilter] = None
+    ) -> AsyncIterator[NPC]:
+        """
+        Asynchronously iterates over NPCs from the /npcs endpoint.
+
+        If an NPCsFilter is provided, only NPCs matching the filter criteria are yielded.
+
+        Yields:
+            Each NPC object from the query results.
+        """
+        raw_dict: Dict[str, NPC] = await self._get_data()
+        npc_list: List[NPC] = list(raw_dict.values())
+        if npc_filter is not None:
+            npc_list = npc_filter.apply(npc_list)
+        for npc in npc_list:
+            yield npc

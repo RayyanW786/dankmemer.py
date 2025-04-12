@@ -1,7 +1,35 @@
 __version__ = "0.2.0a1"
 
 from .client import DankMemerClient
-from .routes import NPC, Item, ItemsFilter, NPCsFilter
+from .routes import (
+    NPC,
+    Bait,
+    BaitsFilter,
+    Bucket,
+    BucketsFilter,
+    Creature,
+    CreaturesFilter,
+    Decoration,
+    DecorationsFilter,
+    Event,
+    EventsFilter,
+    Item,
+    ItemsFilter,
+    NPCsFilter,
+    Location,
+    LocationsFilter,
+    Season,
+    SeasonsFilter,
+    Skill,
+    SkillsFilter,
+    SkillData,
+    SkillDataFilter,
+    Tank,
+    TanksFilter,
+    Tool,
+    ToolsFilter,
+    AllFilter
+)
 from .utils import IN, Above, Below, DotDict, Fuzzy, Range
 
 __all__ = [
@@ -16,4 +44,27 @@ __all__ = [
     "Item",
     "NPC",
     "NPCsFilter",
+    "Bait",
+    "BaitsFilter",
+    "Bucket",
+    "BucketsFilter",
+    "Creature",
+    "CreaturesFilter",
+    "Decoration",
+    "DecorationsFilter",
+    "Event",
+    "EventsFilter",
+    "Location",
+    "LocationsFilter",
+    "Season",
+    "SeasonsFilter",
+    "Skill",
+    "SkillsFilter",
+    "SkillData",
+    "SkillDataFilter",
+    "Tank",
+    "TanksFilter",
+    "Tool",
+    "ToolsFilter",
+    "AllFilter"
 ]

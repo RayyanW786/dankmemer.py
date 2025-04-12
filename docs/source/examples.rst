@@ -37,6 +37,7 @@ Items Examples
 5. **Numeric Filtering with Above/Below/Range**
 
    .. code-block:: python
+    
        # Above
        filtered = await client.items.query(ItemsFilter(netValue=Above(10000)))
        print([e.name for e in filtered])

@@ -1,5 +1,5 @@
 from typing import Any, Union
-
+from datetime import datetime
 
 class Fuzzy:
     """
@@ -103,3 +103,11 @@ class DotDict(dict):
 
     def __setattr__(self, key: str, value: Any) -> None:
         self[key] = value
+
+def parse_iso_timestamp(ts: str) -> datetime:
+    """
+    Parse an ISO8601 timestamp string with a trailing 'Z' indicating UTC.
+    Converts it into a datetime object with tzinfo set to UTC.
+    """
+    # Replace trailing 'Z' with '+00:00'
+    return datetime.fromisoformat(ts.replace("Z", "+00:00"))

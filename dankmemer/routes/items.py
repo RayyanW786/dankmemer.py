@@ -1,7 +1,7 @@
 import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
 from rapidfuzz import fuzz
 
@@ -111,8 +111,7 @@ class ItemsFilter:
     Examples:
         .. code-block:: python
 
-            from dankmemer import Fuzzy, ItemsFilter
-            from dankmemer.types import IN, Above, Below, Range
+            from dankmemer import Fuzzy, ItemsFilter, IN, Above, Below, Range
 
 
             # Exact string matching for the 'name' field.
@@ -243,7 +242,7 @@ class ItemsFilter:
             return score >= filter_val.cutoff
         elif isinstance(filter_val, IN):
             return any(v.lower() in field_value.lower() for v in filter_val.patterns)
-        return field_value.lower() == filter_val.lower()  # type: ignore
+        return field_value.lower() == filter_val.lower()
 
     def _matches_numeric(
         self, field_value: Union[int, float], filter_val: NumericFilterType
@@ -277,11 +276,7 @@ class ItemsRoute:
         raw_data: Dict[str, Any] = await self.client.request("items")
         processed: Dict[int, Item] = {}
         for key, value in raw_data.items():
-            try:
-                item_id: int = int(key)
-            except ValueError:
-                continue
-            processed[item_id] = Item.from_dict(value)
+            processed[key] = Item.from_dict(value)
         self._cache = processed
         self._last_update = datetime.now(timezone.utc)
         return processed
@@ -309,3 +304,22 @@ class ItemsRoute:
         if item_filter is None:
             return items_list
         return item_filter.apply(items_list)
+    
+
+    async def iter_query(
+        self, item_filter: Optional[ItemsFilter] = None
+    ) -> AsyncIterator[Item]:
+        """
+        Asynchronously iterates over items from the /items endpoint.
+
+        If an ItemsFilter is provided, only items matching the filter criteria are yielded.
+
+        Yields:
+            Each Item object from the query results.
+        """
+        raw_dict: Dict[int, Item] = await self._get_data()
+        items_list: List[Item] = list(raw_dict.values())
+        if item_filter is not None:
+            items_list = item_filter.apply(items_list)
+        for item in items_list:
+            yield item

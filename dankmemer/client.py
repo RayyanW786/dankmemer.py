@@ -14,7 +14,22 @@ from dankmemer.exceptions import (
     RateLimitException,
     ServerErrorException,
 )
-from dankmemer.routes import items, npcs
+from dankmemer.routes import (
+    all,
+    baits,
+    buckets,
+    creatures,
+    decorations,
+    events,
+    items,
+    locations,
+    npcs,
+    seasons,
+    skills,
+    skillsdata,
+    tanks,
+    tools,
+)
 
 COLOR_CODES = {
     logging.INFO: "\033[94m",
@@ -32,8 +47,10 @@ class ColoredFormatter(logging.Formatter):
 
 
 handler = logging.StreamHandler()
-dt_fmt = '%Y-%m-%d %H:%M:%S'
-formatter = ColoredFormatter('[{asctime}] [{levelname:<7}] {name}: {message}', dt_fmt, style='{')
+dt_fmt = "%Y-%m-%d %H:%M:%S"
+formatter = ColoredFormatter(
+    "[{asctime}] [{levelname:<7}] {name}: {message}", dt_fmt, style="{"
+)
 handler.setFormatter(formatter)
 
 logger = logging.getLogger("dankmemer")
@@ -85,13 +102,24 @@ class DankMemerClient:
 
         self.items = items.ItemsRoute(self, self.cache_ttl)
         self.npcs = npcs.NPCsRoute(self, self.cache_ttl)
+        self.baits = baits.BaitsRoute(self, self.cache_ttl)
+        self.buckets = buckets.BucketsRoute(self, self.cache_ttl)
+        self.creatures = creatures.CreaturesRoute(self, self.cache_ttl)
+        self.decorations = decorations.DecorationsRoute(self, self.cache_ttl)
+        self.events = events.EventsRoute(self, self.cache_ttl)
+        self.locations = locations.LocationsRoute(self, self.cache_ttl)
+        self.seasons = seasons.SeasonsRoute(self, self.cache_ttl)
+        self.skills = skills.SkillsRoute(self, self.cache_ttl)
+        self.skillsdata = skillsdata.SkillDataRoute(self, self.cache_ttl)
+        self.tanks = tanks.TanksRoute(self, self.cache_ttl)
+        self.tools = tools.ToolsRoute(self, self.cache_ttl)
+        self.all = all.AllRoute(self, self.cache_ttl)
 
     async def __aenter__(self):
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        if self.session:
-            await self.session.close()
+        await self.close()
 
     async def request(self, route: str, params: dict = None):
         """
@@ -135,7 +163,6 @@ class DankMemerClient:
 
         url = f"{self.base_url}/{route}"
 
-        
         max_attempts = 5
         attempt = 0
         backoff = 1.0
@@ -219,3 +246,7 @@ class DankMemerClient:
         raise RateLimitException(
             "Max retries exceeded due to repeated 429 responses.", status_code=429
         )
+
+    async def close(self):
+        if self.session and not self.session.closed:
+            await self.session.close()
